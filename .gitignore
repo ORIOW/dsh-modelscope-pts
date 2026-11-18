@@ -1,0 +1,19 @@
+# 本地调研、开发留存与临时产物（不纳入版本控制）
+tmp/
+scripts/
+docs/
+zcode_tasks/
+.dsh/
+unused/
+unused-outdir/
+*.log
+
+# 依赖与构建产物
+node_modules/
+*.tsbuildinfo
+
+# 操作系统 / 编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

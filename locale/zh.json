@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "ModelScope 魔粒余额",
+    "description": "在模型选择器与插件页实时显示 ModelScope 账号的剩余魔粒（积分）余额，支持访问令牌优先、失败回退会话 Cookie。"
+  }
+}

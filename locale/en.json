@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "ModelScope points",
+    "description": "Shows the ModelScope account's remaining magicubes (points) balance in the model selector and on the plugin page. Supports an access token first with a session-cookie fallback."
+  }
+}
