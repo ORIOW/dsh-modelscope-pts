@@ -10,6 +10,7 @@ unused-outdir/
 
 # 依赖与构建产物
 node_modules/
+dist/
 *.tsbuildinfo
 
 # 操作系统 / 编辑器
