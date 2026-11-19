@@ -13,7 +13,7 @@ The plugin reads the ModelScope balance endpoint:
 GET https://www.modelscope.cn/openapi/v1/magicubes/balance
 ```
 
-and displays `data.available_balance` (available), `total_balance` (total) and `frozen_amount` (frozen).
+and displays `data.available_balance` (available) and `frozen_amount` (frozen): the plugin-page panel shows both, while the model-selector chip shows the available balance only. (`total_balance` is fetched but not displayed.)
 
 ### Credentials
 
@@ -37,9 +37,27 @@ Policy: **token first, cookie fallback**. If a token is configured it is used fi
 
 ## Installation
 
-Install through the Harness **Plugin Manager** (bundle install). The plugin targets DSH Desktop **0.14.0** and the `web` client platform.
+Install through the Harness **Plugin Manager** — either from the DSH plugin marketplace entry for this repository, or as a local bundle tarball (`install_bundle`). The plugin targets DSH Desktop **0.14.0** and the `web` client platform.
 
-After installing, open the plugin's Configure page, enter a token or cookie, and save. The balance refreshes automatically (default interval 60 s, configurable).
+### No manual YAML editing required
+
+The plugin registers itself through the bundle patch that ships **inside the package** ([`cordis.patch.yml`](cordis.patch.yml), declared via `dsh.bundle.patch` in `package.json`). Once the Plugin Manager adds this package to the profile's bundle list, the Harness loader overlays that patch layer automatically at start-up. You do **not** need to edit any of these by hand:
+
+- the profile-level `cordis.patch.yml` (user layer),
+- `pnpm-workspace.yaml`,
+- the profile `package.json` (including any overrides lines).
+
+### Prerequisites
+
+- A restart may be required around installation: if the profile has a pending, not-yet-applied generation update, Plugin Manager refuses to apply a new bundle until DSH Desktop has been restarted once. (General Plugin Manager behavior, not specific to this plugin.)
+- The model-selector chip only appears next to models from the **ModelScope** provider (`provider.id === "modelscope"`). If your profile has no ModelScope provider configured, the plugin still works — the balance panel lives on its Configure page — there simply are no ModelScope model rows to decorate.
+
+### First run
+
+1. Install the plugin, then restart DSH Desktop (or open a new session).
+2. Open **Plugins → Installed → dsh-modelscope-pts → Configure**.
+3. Enter a credential — an access token (`ms-…`, created under ModelScope → My Profile → Settings → Access Token) or a session cookie (copy the `Cookie:` header from a logged-in `www.modelscope.cn` request). The plugin uses token first and falls back to the cookie on an authentication error; see [Credentials](#credentials).
+4. Save. The balance panel and the model-selector chip refresh automatically (default interval 60 s, configurable).
 
 ## License
 
