@@ -1,6 +1,6 @@
 {
   "name": "dsh-modelscope-pts",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": false,
   "type": "module",
   "description": "在 DeepSeek Harness 的模型选择器与插件管理页实时显示 ModelScope 账号的剩余魔粒（积分）余额：访问令牌优先、失败回退会话 Cookie。",
