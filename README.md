@@ -1,8 +1,10 @@
 # dsh-modelscope-pts
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 A DeepSeek Harness (DSH) Desktop plugin that shows your **ModelScope account's remaining magicubes (points) balance** in two places, updated in real time:
 
-- the **model selector** — a chip next to each model row (`魔粒 N`), and
+- the **model selector** — a chip next to each ModelScope model row (`魔粒 N`), with a **low-balance warning** badge when the balance runs short, and
 - the **plugin page** — a full balance panel plus credential management, under **Plugins → Installed → dsh-modelscope-pts → Configure**.
 
 ## How it works
@@ -14,6 +16,10 @@ GET https://www.modelscope.cn/openapi/v1/magicubes/balance
 ```
 
 and displays `data.available_balance` (available) and `frozen_amount` (frozen): the plugin-page panel shows both, while the model-selector chip shows the available balance only. (`total_balance` is fetched but not displayed.)
+
+### Low-balance warning
+
+When the available balance drops to **25 magicubes or below** (`LOW_BALANCE_THRESHOLD` in `lib/client.js`), a small red warning triangle appears right of the chip in the model selector, and the hover title gains a `，余额不足` ("insufficient balance") suffix. The badge only renders while the chip itself renders (ModelScope provider rows, option placement, switch on) and a valid balance reading exists — with no data there is no false warning.
 
 ### Credentials
 
