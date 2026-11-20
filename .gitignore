@@ -2,7 +2,7 @@
 tmp/
 scripts/
 docs/
-zcode_tasks/
+tasks/
 .dsh/
 unused/
 unused-outdir/
