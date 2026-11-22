@@ -7,6 +7,28 @@ A DeepSeek Harness (DSH) Desktop plugin that shows your **ModelScope account's r
 - the **model selector** — a chip next to each ModelScope model row (`魔粒 N`), with a **low-balance warning** badge when the balance runs short, and
 - the **plugin page** — a full balance panel plus credential management, under **Plugins → Installed → dsh-modelscope-pts → Configure**.
 
+The bundle also ships a second, independently toggleable component, **ModelScope daily magicubes** — a scheduled daily like task that earns points. See [Components](#components).
+
+## Components
+
+The bundle ships **two components** (Plugins → Installed → dsh-modelscope-pts → *Included components*), each with its own on/off switch and its own card on the plugin page:
+
+### ModelScope points (`modelscope-pts`)
+
+The balance display described below: model-selector chip, low-balance warning, plugin-page panel and credential management. Credentials entered here are shared with the daily component.
+
+### ModelScope daily magicubes (`modelscope-magicube`)
+
+A scheduled daily like task that earns magicubes (2 points per like, 10 likes/day cap):
+
+- Picks models you have **not starred yet** and never cancels an existing star, skipping your own models (by path owner and by creator), from the catalog (`/api/v1/dolphin/models`, up to 6 pages × 100 entries, shuffled before picking).
+- Runs at a configurable time of day (`HH:MM`, default `09:30`); if DSH was not running at that time the task **catches up** on the next start. If the run fails (network not ready, expired cookie), it does not retry automatically for the rest of the day — recover with the card's **Run now** button.
+- Waits a **random 1–10 seconds** between consecutive likes.
+- Requires a **session cookie** — the same one configured on the points component. Likes cannot be done with an access token alone.
+- Shows per-day results (liked / failed / skipped) on the component card; the run record lives in volatile config fields and survives restarts.
+
+This component is the **plugin implementation** of the standalone Python project `modelscope-magicube` (same daily-like workflow); the plugin version runs inside DSH Desktop with **no Python required**.
+
 ## How it works
 
 The plugin reads the ModelScope balance endpoint:
@@ -37,7 +59,10 @@ Policy: **token first, cookie fallback**. If a token is configured it is used fi
 | `package.json` | Plugin manifest (`dsh.bundle.patch`, `dsh.client`). |
 | `cordis.patch.yml` | Bundle patch that registers the plugin. |
 | `lib/index.js` | Host half: fetches the balance, manages credentials, exposes RPC. |
-| `lib/client.js` | Client half: registers the model-row badge and the plugin configure card. |
+| `lib/rpc.js` | Shared RPC channel mechanism (envelope, trust check, body limits). |
+| `lib/client.js` | Client half: registers the model-row badge and the two plugin configure cards. |
+| `lib/magicube.js` | Host half of the daily-magicubes component: scheduler, like task, RPC. |
+| `magicube/` | Daily-magicubes component resources: locale (`meta.title`/`meta.description`) and icon. |
 | `locale/` | Display metadata (title/description) in English and Chinese. |
 | `icon.svg` | Plugin icon. |
 

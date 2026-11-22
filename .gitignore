@@ -4,9 +4,14 @@ scripts/
 docs/
 tasks/
 .dsh/
+.zwork/
+scratch/
 unused/
 unused-outdir/
 *.log
+
+# 独立 Python 版（有自己的 GitHub 仓库 ORIOW/modelscope-magicube，不并入本仓库）
+modelscope-magicube/
 
 # 依赖与构建产物
 node_modules/

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "ModelScope 每日互动",
+    "description": "每日定时为 ModelScope 上未星标的模型点赞领取魔粒（积分）：到点自动运行并支持手动补跑，两次点赞之间随机延时，结果可在组件卡查看；无需 Python。"
+  }
+}

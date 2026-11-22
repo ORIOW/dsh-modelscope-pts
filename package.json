@@ -1,9 +1,9 @@
 {
   "name": "dsh-modelscope-pts",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "private": false,
   "type": "module",
-  "description": "在 DeepSeek Harness 的模型选择器与插件管理页实时显示 ModelScope 账号的剩余魔粒（积分）余额：访问令牌优先、失败回退会话 Cookie。",
+  "description": "在 DeepSeek Harness 的模型选择器与插件管理页实时显示 ModelScope 账号的剩余魔粒（积分）余额：访问令牌优先、失败回退会话 Cookie；附带每日魔粒互动组件（modelscope-magicube）：定时为未星标的模型点赞领取魔粒，插件实现无需 Python。",
   "keywords": [
     "dsh",
     "dsh-plugin",
@@ -21,16 +21,22 @@
     "./client": {
       "default": "./lib/client.js"
     },
+    "./magicube": {
+      "default": "./lib/magicube.js"
+    },
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json",
     "./locale/*.json": "./locale/*.json",
-    "./icon": "./icon.svg"
+    "./magicube/locale/*.json": "./magicube/locale/*.json",
+    "./icon": "./icon.svg",
+    "./magicube/icon": "./magicube/icon.svg"
   },
   "files": [
     "lib",
     "locale",
     "icon.svg",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "magicube"
   ],
   "license": "MIT",
   "dsh": {

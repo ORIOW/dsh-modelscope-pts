@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "ModelScope daily magicubes",
+    "description": "Runs a scheduled daily like task on ModelScope models you have not starred yet to earn magicubes (points): runs automatically at the configured time with a manual run button, waits a random delay between likes, and shows results on the component card. No Python required."
+  }
+}

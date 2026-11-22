@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="ModelScope points">
+  <!-- dsh-modelscope-pts：一枚魔粒金币 + 星芒。原创建模，无外部素材。 -->
+  <rect x="0" y="0" width="24" height="24" rx="6" fill="#1f2937"/>
+  <circle cx="12" cy="12" r="7.5" fill="#d97706"/>
+  <circle cx="12" cy="12" r="7.5" fill="none" stroke="#fbbf24" stroke-width="1.2"/>
+  <path d="M12 7.2l1.5 3.3 3.3 1.5-3.3 1.5L12 16.8l-1.5-3.3L7.2 12l3.3-1.5z" fill="#fffbeb"/>
+  <circle cx="17.2" cy="7" r="1.4" fill="#fbbf24"/>
+</svg>
