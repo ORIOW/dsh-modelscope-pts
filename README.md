@@ -25,6 +25,8 @@ A scheduled daily like task that earns magicubes (2 points per like, 10 likes/da
 - Runs at a configurable time of day (`HH:MM`, default `09:30`); if DSH was not running at that time the task **catches up** on the next start. If the run fails (network not ready, expired cookie), it does not retry automatically for the rest of the day — recover with the card's **Run now** button.
 - Waits a **random 1–10 seconds** between consecutive likes.
 - Requires a **session cookie** — the same one configured on the points component. Likes cannot be done with an access token alone.
+- When a daily run starts, the component automatically opens a ModelScope page in your **default browser** to claim the login reward (**at most once per day**). The URL defaults to the My Overview page `https://www.modelscope.cn/my/overview`; a custom URL can be configured on the card, and the behavior can be turned off there. Open failures are only logged and **never block liking**.
+- Ships a built-in **model availability probe**: on a configurable interval (default 14 days) it checks whether the ModelScope models you added are still servable; the card offers a **Probe now** button, groups results by the model's task category, and shows a **red warning** when any model has been removed. The probe is read-only — it **never modifies** your model configuration.
 - Shows per-day results (liked / failed / skipped) on the component card; the run record lives in volatile config fields and survives restarts.
 
 This component is the **plugin implementation** of the standalone Python project `modelscope-magicube` (same daily-like workflow); the plugin version runs inside DSH Desktop with **no Python required**.
@@ -42,6 +44,25 @@ and displays `data.available_balance` (available) and `frozen_amount` (frozen): 
 ### Low-balance warning
 
 When the available balance drops to **25 magicubes or below** (`LOW_BALANCE_THRESHOLD` in `lib/client.js`), a small red warning triangle appears right of the chip in the model selector, and the hover title gains a `，余额不足` ("insufficient balance") suffix. The badge only renders while the chip itself renders (ModelScope provider rows, option placement, switch on) and a valid balance reading exists — with no data there is no false warning.
+
+### Daily login reward (automatic browser open)
+
+On the first daily-interaction run of a day (scheduled or via **Run now**), the plugin tries to open a ModelScope page in your default browser to claim the login reward:
+
+- URL: `https://www.modelscope.cn/my/overview` (the My Overview page) by default — the profile page became inaccessible on 2026-11-26 and is deprecated; a custom URL configured on the component card (must start with `http(s)://`) takes precedence.
+- "At most once per day" counts **attempts**: a failed open is still recorded for the day (volatile `lastBrowserOpenDate`), and a manual re-run the same day will not open again.
+- Platform implementation: `cmd /c start` on Windows, `open` on macOS, `xdg-open` on Linux (spawned detached, never blocking the plugin); failures are only logged.
+
+### Model availability probe
+
+On the `probeIntervalDays` interval (default 14 days, minimum 1) the plugin probes whether the ModelScope models you added on the profile user patch layer (the `llm-pi-ai` row) are still servable:
+
+1. It reads the profile patch file (`DSH_PROFILE_DIR` first, falling back to `%APPDATA%\dsh-desktop\harness\profiles\desktop\cordis.patch.yml`) and extracts `config.providers.modelscope.models[].id`; when unreadable the status shows "未找到已添加的 ModelScope 模型" (no added ModelScope models found) without raising an error.
+2. `GET https://api-inference.modelscope.cn/v1/models` provides the set of servable ids (anonymous; if the credential store resolves a `MODELSCOPE_API_KEY` it is sent as a Bearer header — the value never reaches logs/RPC/UI).
+3. Two-tier verdict: not in the servable list → confirm via `GET /api/v1/models/{ns}/{name}` — 404 + `Code: 10010205001` means "已下架" (removed); 200 means "推理不可用" (exists but not servable, possibly gated); in the list means "可用" (available).
+4. Results are grouped by the detail's `Data.Tasks[0].ChineseName` (falling back to `Name`); when any model is removed the summary line gains a red warning "⚠ N 个已添加模型已下架：…".
+
+Probing never blocks liking (both share the 60-second scheduler tick under two independent mutexes); a probe failure only affects the probe status. The feature is **read-only** — it only reports, never touches your model configuration.
 
 ### Credentials
 

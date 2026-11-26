@@ -25,6 +25,8 @@
 - 每日运行时间可配置（`HH:MM`，默认 `09:30`）；到点没开机会在下次启动后**补跑**。若到点时运行失败（如网络未就绪、Cookie 失效），当天不再自动重试（避免全天空转），修复后用组件卡上的**立即运行**按钮恢复。
 - 相邻两次点赞之间**随机等待 1~10 秒**。
 - 需要**会话 Cookie**——与余额组件共用同一份；仅访问令牌无法点赞。
+- 每日互动运行时会自动用**默认浏览器**打开 ModelScope 页面领取登录奖励（**每天最多一次**）。地址默认「我的概览」页 `https://www.modelscope.cn/my/overview`；组件卡可配置自定义地址或关闭该行为。打开失败只记日志，**绝不阻塞点赞**。
+- 内置**模型可用性探测**：按可配置间隔（默认 14 天）核对「已添加的 ModelScope 模型」是否仍可推理；组件卡可**立即探测**，结果按模型任务分类分组展示，有模型下架时给出**红色警示**。探测只读——**绝不修改**你的模型配置。
 - 组件卡展示每日结果（成功/失败/跳过）；运行记录存放在 volatile 配置字段，重启不丢。
 
 本组件是独立 Python 项目 `modelscope-magicube` 的**插件实现**（同一套每日点赞流程）；插件版直接跑在 DSH Desktop 里，**无需 Python**。
@@ -42,6 +44,25 @@ GET https://www.modelscope.cn/openapi/v1/magicubes/balance
 ### 低余额警告
 
 当可用余额降至 **25 魔粒及以下**（阈值常量 `LOW_BALANCE_THRESHOLD`，见 `lib/client.js`）时，模型选择器的魔粒 chip 右侧出现一枚红色三角感叹号警告牌，悬浮文案末尾追加「，余额不足」。警告牌只在 chip 本身渲染时出现（ModelScope provider 的模型行、下拉选项位、展示开关开启），且必须有有效余额读数——没有读数时不会误报。
+
+### 每日登录奖励（自动打开浏览器）
+
+每日互动任务（定时或手动「立即运行」）运行当天首次会尝试用默认浏览器打开 ModelScope 页面，领取登录奖励：
+
+- 地址：默认「我的概览」页 `https://www.modelscope.cn/my/overview`（2026-11-26 起 profile 页无法访问，已弃用）；组件卡配置的自定义地址（须 `http(s)://` 开头）优先于默认值。
+- 「每天最多一次」按**尝试**计：打开失败也记录当天已尝试（volatile `lastBrowserOpenDate`），同日手动重跑不会重复打开。
+- 平台实现：Windows `cmd /c start`、macOS `open`、Linux `xdg-open`（detached 启动，不阻塞插件）；失败只写日志。
+
+### 模型可用性探测
+
+插件按 `probeIntervalDays`（默认 14 天，下限 1）周期探测你在 profile 用户补丁层（`llm-pi-ai` 行）添加的 ModelScope 模型是否仍可推理：
+
+1. 读取 profile 补丁文件（`DSH_PROFILE_DIR` 优先，兜底 `%APPDATA%\dsh-desktop\harness\profiles\desktop\cordis.patch.yml`），解析出 `config.providers.modelscope.models[].id`；读不到时状态显示「未找到已添加的 ModelScope 模型」，不报错。
+2. `GET https://api-inference.modelscope.cn/v1/models` 取可推理 id 集合（匿名可读；若凭据库解析到 `MODELSCOPE_API_KEY` 则附带 Bearer，值绝不进日志/RPC/UI）。
+3. 两级判定：不在推理清单 → `GET /api/v1/models/{ns}/{name}` 确认——404 + `Code: 10010205001` 判「已下架」；200 判「推理不可用」（可能 gated）；在清单判「可用」。
+4. 结果按详情 `Data.Tasks[0].ChineseName`（缺则 `Name`）分组展示；有模型下架时摘要行出现红色警示「⚠ N 个已添加模型已下架：…」。
+
+探测与每日点赞互不阻塞（共用 60 秒调度 tick，两把独立互斥锁）；探测失败只影响探测状态。该功能**只读**——只提示，绝不增删改你的模型配置。
 
 ### 凭据
 
