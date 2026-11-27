@@ -64,6 +64,16 @@ On the `probeIntervalDays` interval (default 14 days, minimum 1) the plugin prob
 
 Probing never blocks liking (both share the 60-second scheduler tick under two independent mutexes); a probe failure only affects the probe status. The feature is **read-only** — it only reports, never touches your model configuration.
 
+### Popup result notifications
+
+When `popupNotify` is on (the default) the client watches the shared store and raises a small portal popup at the bottom-right corner of the window when a run or probe finishes:
+
+- run completed → "每日互动完成" with success/fail/skip counts; hard failure → a warning card with the error;
+- run interrupted by an expired session cookie → **silent**, unless the host-side check proves the access token is dead too (both credentials dead), in which case an error card "凭据全部失效" asks you to reconfigure;
+- probe found delisted models → a warning card naming them.
+
+The first snapshot after page load only sets a baseline (no firing on navigation), an unchanged result never refires, and turning `popupNotify` off silences everything while still tracking the baseline. Click the popup to dismiss; it auto-dismisses after a few seconds.
+
 ### Credentials
 
 ModelScope authenticates with a session cookie, which a host-side plugin cannot read from your browser. This plugin therefore supports two credential sources, entered on the plugin Configure page:

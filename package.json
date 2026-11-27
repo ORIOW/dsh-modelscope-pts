@@ -1,9 +1,9 @@
 {
   "name": "dsh-modelscope-pts",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": false,
   "type": "module",
-  "description": "在 DeepSeek Harness 的模型选择器与插件管理页实时显示 ModelScope 账号的剩余魔粒（积分）余额：访问令牌优先、失败回退会话 Cookie；附带每日魔粒互动组件（modelscope-magicube）：定时为未星标的模型点赞领取魔粒、运行时自动打开浏览器领登录奖励、按周期探测已添加模型的可用性，插件实现无需 Python。",
+  "description": "在 DeepSeek Harness 的模型选择器与插件管理页实时显示 ModelScope 账号的剩余魔粒（积分）余额：访问令牌优先、失败回退会话 Cookie；附带每日魔粒互动组件（modelscope-magicube）：定时为未星标的模型点赞领取魔粒、运行时自动打开浏览器领登录奖励、按周期探测已添加模型的可用性，运行或探测结束后以浮窗小卡提示结果（凭据全部失效时强提醒）；插件实现无需 Python。",
   "keywords": [
     "dsh",
     "dsh-plugin",
